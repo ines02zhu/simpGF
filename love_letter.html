@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For you</title>
+<style>
+  /*
+    ============================================================
+    HOW TO CUSTOMISE THIS (no coding needed, just find & edit):
+    1. Search for "EDIT ME" comments below.
+    2. The letter text is in the <div id="letterBody"> section
+       near the bottom — search "LETTER TEXT HERE".
+    3. Colors/fonts are set once at the top under :root.
+    ============================================================
+  */
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,500&family=Caveat:wght@500;700&family=Inter:wght@400;500&display=swap');
+
+  :root{
+    --night-deep:#161c33;
+    --night-mid:#232c4d;
+    --gold:#e8c27a;
+    --gold-soft:#f3dca8;
+    --paper:#faf3e4;
+    --paper-line:#e4d6b6;
+    --ink:#2b2a26;
+    --ink-soft:#5a5748;
+  }
+
+  *{box-sizing:border-box;}
+
+  html,body{
+    margin:0;
+    padding:0;
+    background:var(--night-deep);
+    font-family:'Inter',sans-serif;
+    color:var(--paper);
+    overflow-x:hidden;
+  }
+
+  .stage{
+    position:relative;
+    width:100%;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:40px 20px 60px;
+    background:
+      radial-gradient(ellipse at 50% 30%, var(--night-mid), transparent 60%),
+      var(--night-deep);
+    overflow:hidden;
+  }
+
+  .stars{
+    position:absolute;
+    inset:0;
+    z-index:0;
+  }
+
+  .heading{
+    position:relative;
+    z-index:2;
+    text-align:center;
+    font-family:'Playfair Display',serif;
+    font-style:italic;
+    font-weight:500;
+    font-size:clamp(20px,4vw,30px);
+    color:var(--gold-soft);
+    margin:0 0 8px;
+    letter-spacing:0.02em;
+    opacity:0;
+    animation:fadeIn 1.2s ease forwards 0.2s;
+  }
+
+  .subheading{
+    position:relative;
+    z-index:2;
+    text-align:center;
+    font-size:14px;
+    color:#c9cbe0;
+    margin:0 0 50px;
+    opacity:0;
+    animation:fadeIn 1.2s ease forwards 0.5s;
+  }
+
+  @keyframes fadeIn{
+    to{opacity:1;}
+  }
+
+  .envelope-wrap{
+    position:relative;
+    z-index:2;
+    cursor:pointer;
+    transform:scale(0) rotate(-8deg);
+    animation: pop 0.7s cubic-bezier(.34,1.56,.64,1) forwards 0.7s;
+  }
+
+  @keyframes pop{
+    to{ transform:scale(1) rotate(0deg); }
+  }
+
+  .envelope-wrap.bounce{
+    animation: pop 0.7s cubic-bezier(.34,1.56,.64,1) forwards 0.7s, hover 2.2s ease-in-out infinite 1.6s;
+  }
+
+  @keyframes hover{
+    0%,100%{ transform:translateY(0) rotate(0deg); }
+    50%{ transform:translateY(-8px) rotate(0deg); }
+  }
+
+  .envelope{
+    width:min(220px, 60vw);
+  }
+
+  .envelope svg{
+    width:100%;
+    height:auto;
+    filter:drop-shadow(0 16px 30px rgba(0,0,0,0.45));
+  }
+
+  .envelope-hint{
+    text-align:center;
+    font-size:13px;
+    color:#c9cbe0;
+    opacity:0.8;
+    margin-top:18px;
+    letter-spacing:0.03em;
+  }
+
+  /* ---------- Letter overlay ---------- */
+
+  .overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(10,13,26,0.75);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+    z-index:50;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity 0.5s ease;
+  }
+
+  .overlay.open{
+    opacity:1;
+    pointer-events:auto;
+  }
+
+  .letter{
+    background:var(--paper);
+    color:var(--ink);
+    width:100%;
+    max-height:85vh;
+    overflow-y:auto;
+    border-radius:4px;
+    padding:44px 40px 40px;
+    position:relative;
+    box-shadow:0 30px 60px rgba(0,0,0,0.45);
+    transform:scale(0.85) translateY(20px);
+    opacity:0;
+    transition:transform 0.5s cubic-bezier(.2,.9,.3,1.1), opacity 0.4s ease;
+    background-image:
+      linear-gradient(var(--paper-line) 1px, transparent 1px);
+    background-size: 100% 32px;
+    background-position: 0 90px;
+  }
+
+  .overlay.open .letter{
+    transform:scale(1) translateY(0);
+    opacity:1;
+  }
+
+  .letter-close{
+    position:absolute;
+    top:14px;
+    right:16px;
+    background:none;
+    border:none;
+    font-size:20px;
+    color:var(--ink-soft);
+    cursor:pointer;
+    line-height:1;
+    padding:6px;
+  }
+
+  .letter-date{
+    font-size:13px;
+    color:var(--ink-soft);
+    margin:0 0 18px;
+    font-family:'Inter',sans-serif;
+  }
+
+  .letter-greeting{
+    font-family:'Caveat',cursive;
+    font-size:32px;
+    margin:0 0 18px;
+    color:var(--ink);
+  }
+
+  .letter-body p{
+    font-family:'Playfair Display',serif;
+    font-size:16.5px;
+    line-height:1.85;
+    margin:0 0 18px;
+    color:var(--ink);
+  }
+
+  .letter-signoff{
+    font-family:'Caveat',cursive;
+    font-size:30px;
+    margin-top:10px;
+    color:var(--ink);
+  }
+
+  @media (max-width:480px){
+    .letter{padding:34px 22px 30px;}
+    .letter-greeting{font-size:26px;}
+    .letter-body p{font-size:15px;}
+  }
+
+  /* ---------- Corner photo ---------- */
+
+  .popout-group{
+    position:relative;
+    width:min(560px, 100%);
+    max-height:90vh;
+  }
+
+  .corner-photo{
+    float:right;
+    width:min(150px, 34vw);
+    margin:0 -14px 10px 16px;
+    background:var(--paper);
+    border:3px solid var(--gold);
+    box-shadow:0 14px 30px rgba(0,0,0,0.4);
+    transform:rotate(6deg);
+    opacity:0;
+    transition:opacity 0.5s ease 0.15s;
+  }
+
+  .overlay.open .corner-photo{
+    opacity:1;
+  }
+
+  .corner-photo img{
+    width:100%;
+    aspect-ratio:4/5;
+    object-fit:cover;
+    display:block;
+    background:#3d4a7a;
+  }
+
+  @media (max-width:480px){
+    .corner-photo{
+      width:36vw;
+      margin:0 -10px 8px 12px;
+    }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="stage">
+  <svg class="stars" viewBox="0 0 800 800" preserveAspectRatio="xMidYMid slice">
+    <g fill="#f3dca8" opacity="0.8">
+      <circle cx="60" cy="80" r="2.2"/>
+      <circle cx="140" cy="220" r="1.6"/>
+      <circle cx="720" cy="120" r="2.2"/>
+      <circle cx="660" cy="300" r="1.6"/>
+      <circle cx="40" cy="500" r="2"/>
+      <circle cx="760" cy="560" r="2.2"/>
+      <circle cx="90" cy="650" r="1.6"/>
+      <circle cx="700" cy="700" r="2"/>
+      <circle cx="400" cy="40" r="2.1"/>
+      <circle cx="500" cy="750" r="1.6"/>
+      <circle cx="300" cy="720" r="1.8"/>
+      <circle cx="620" cy="60" r="1.6"/>
+      <circle cx="200" cy="30" r="1.6"/>
+    </g>
+  </svg>
+
+  <!-- EDIT ME: title + subtitle -->
+  <p class="heading">a little something for you</p>
+  <p class="subheading">happy birthday</p>
+
+  <div class="envelope-wrap" id="envelopeWrap">
+    <div class="envelope">
+      <svg viewBox="0 0 200 144">
+        <rect x="4" y="4" width="192" height="136" rx="5" fill="#f3dca8"/>
+        <path d="M4 12 L100 84 L196 12" fill="none" stroke="#c9a25e" stroke-width="3"/>
+        <rect x="4" y="4" width="192" height="136" rx="5" fill="none" stroke="#c9a25e" stroke-width="2.5"/>
+        <circle cx="100" cy="76" r="17" fill="#c9553a"/>
+        <path d="M100 62 l6 12 -6 12 -6-12z" fill="#e8c27a" opacity="0.85"/>
+      </svg>
+    </div>
+    <p class="envelope-hint">tap to open</p>
+  </div>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="popout-group">
+
+    <!-- CORNER PHOTO: floats in the top-right of the letter; text wraps around it.
+         EDIT ME: replace the src below with your own photo.
+         To use your own photo: put the image file in the same folder as this
+         HTML file and change src="photo.jpg" to match its filename. -->
+
+    <div class="letter">
+      <button class="letter-close" id="closeBtn" aria-label="Close letter">&times;</button>
+
+      <div class="corner-photo">
+        <img src="photo.jpg" alt="A photo of us" onerror="this.style.background='#3d4a7a'; this.alt='Add your photo: replace photo.jpg';">
+      </div>
+
+      <!-- EDIT ME: date -->
+      <p class="letter-date">22 July 2026</p>
+
+      <!-- EDIT ME: greeting -->
+      <p class="letter-greeting">My love,</p>
+
+      <!-- LETTER TEXT HERE — replace each paragraph with your own story.
+           Keep it as separate <p> tags so the spacing stays even. -->
+      <div class="letter-body" id="letterBody">
+        <p>I wanted to write you something today instead of just saying it, because some things deserve more than a text.</p>
+        <p>[Replace this paragraph: how you two met. The small, specific detail that made you notice him — the song playing, the thing he said, the way he laughed at his own joke before anyone else did.]</p>
+        <p>[Replace this paragraph: a moment that made you sure. A trip, a hard week he showed up for, an ordinary Tuesday that turned out to matter.]</p>
+        <p>[Replace this paragraph: something about him specifically — a habit you've come to love, a way he makes you feel, an inside joke you can drop in here.]</p>
+        <p>Happy birthday. I love you more than this little envelope could ever hold — but it's a start.</p>
+      </div>
+
+      <!-- EDIT ME: sign-off -->
+      <p class="letter-signoff">Always yours</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  const envelopeWrap = document.getElementById('envelopeWrap');
+  const overlay = document.getElementById('overlay');
+  const closeBtn = document.getElementById('closeBtn');
+
+  setTimeout(() => envelopeWrap.classList.add('bounce'), 1500);
+
+  envelopeWrap.addEventListener('click', () => {
+    overlay.classList.add('open');
+  });
+
+  closeBtn.addEventListener('click', () => {
+    overlay.classList.remove('open');
+  });
+
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) overlay.classList.remove('open');
+  });
+</script>
+
+</body>
+</html>
